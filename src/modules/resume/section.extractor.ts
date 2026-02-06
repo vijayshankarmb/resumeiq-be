@@ -35,11 +35,13 @@ export const extractSections = (rawText: string): ResumeSections => {
 
   for (const [sectionKey, headers] of Object.entries(SECTION_HEADERS)) {
     for (const header of headers) {
-      const match = new RegExp(`\\n${header}\\n`, "i").exec(text);
+      const regex = new RegExp(`(^|\\n)${header}\\s*:?\\s*(\\n|$)`, "i");
+      const match = regex.exec(text);
       if (match?.index !== undefined) {
+        const actualIndex = match[0].startsWith("\n") ? match.index + 1 : match.index;
         detectedSections.push({
           key: sectionKey as keyof ResumeSections,
-          index: match.index,
+          index: actualIndex,
         });
         break;
       }

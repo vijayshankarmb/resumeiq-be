@@ -1,5 +1,5 @@
 import fs from "fs";
-const pdfParse = require("pdf-parse");
+import { PDFParse } from "pdf-parse";
 
 export class PdfParseError extends Error {
   constructor(message: string) {
@@ -11,14 +11,16 @@ export class PdfParseError extends Error {
 export const parsePdf = async (filePath: string): Promise<string> => {
   try {
     const fileBuffer = fs.readFileSync(filePath);
-    const result = await pdfParse(fileBuffer);
+    const parser = new PDFParse({ data: fileBuffer });
+    const result = await parser.getText();
 
     if (!result.text || result.text.trim().length === 0) {
       throw new PdfParseError("PDF contains no extractable text");
     }
 
     return result.text;
-  } catch (error) {
-    throw new PdfParseError("Failed to parse PDF");
+  } catch (error: any) {
+    if (error instanceof PdfParseError) throw error;
+    throw new PdfParseError(`Failed to parse PDF: ${error.message}`);
   }
 };

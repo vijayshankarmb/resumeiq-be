@@ -1,8 +1,5 @@
 import { normalizeResumeText } from "./text.normalizer";
 
-/**
- * Final extracted resume sections (V1)
- */
 export interface ResumeSections {
   summary?: string;
   experience?: string;
@@ -12,9 +9,6 @@ export interface ResumeSections {
   other?: string;
 }
 
-/**
- * Section header aliases (heuristic-first)
- */
 const SECTION_HEADERS: Record<keyof Omit<ResumeSections, "other">, string[]> = {
   summary: ["summary", "professional summary", "about me"],
   experience: ["experience", "work experience", "employment"],
@@ -23,23 +17,14 @@ const SECTION_HEADERS: Record<keyof Omit<ResumeSections, "other">, string[]> = {
   projects: ["projects", "personal projects"],
 };
 
-/**
- * Skill keywords (expandable later or from config)
- */
 const SKILL_KEYWORDS = [
   "javascript", "typescript", "python", "java", "c++",
   "react", "node", "express", "next", "sql", "mongodb",
   "aws", "docker", "git", "prisma", "postgres", "django",
 ];
 
-/**
- * Experience heuristic (years / date ranges)
- */
 const DATE_REGEX = /\b(19|20)\d{2}\b/;
 
-/**
- * Main section extraction logic
- */
 export const extractSections = (rawText: string): ResumeSections => {
   const text = normalizeResumeText(rawText);
 
@@ -48,7 +33,6 @@ export const extractSections = (rawText: string): ResumeSections => {
     index: number;
   }[] = [];
 
-  // 1. Detect section header positions
   for (const [sectionKey, headers] of Object.entries(SECTION_HEADERS)) {
     for (const header of headers) {
       const match = new RegExp(`\\n${header}\\n`, "i").exec(text);
@@ -62,12 +46,10 @@ export const extractSections = (rawText: string): ResumeSections => {
     }
   }
 
-  // 2. Sort by appearance order
   detectedSections.sort((a, b) => a.index - b.index);
 
   const sections: ResumeSections = {};
 
-  // 3. Extract content between headers
   for (let i = 0; i < detectedSections.length; i++) {
     const current = detectedSections[i];
     const next = detectedSections[i + 1];
@@ -94,7 +76,6 @@ export const extractSections = (rawText: string): ResumeSections => {
     }
   }
 
-  // 4. Heuristic fallback (no headers detected)
   if (Object.keys(sections).length === 0) {
     const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
 
@@ -111,7 +92,6 @@ export const extractSections = (rawText: string): ResumeSections => {
     };
   }
 
-  // 5. Capture leftover content
   if (!sections.other) {
     sections.other = text;
   }

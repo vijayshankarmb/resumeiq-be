@@ -4,6 +4,7 @@ import path from "path";
 import { parsePdf } from "../../infra/pdf/pdf.parser";
 import { extractSections } from "./section.extractor";
 import { scoreResume } from "./analysis/scoring.engine";
+import { analyzeWithLLM } from "../../infra/llm/resume.analyzer";
 
 export const analyzeResume = async (
   req: Request,
@@ -22,13 +23,16 @@ export const analyzeResume = async (
     const sections = extractSections(text);
     const scores = scoreResume(sections);
 
+    const suggestions = await analyzeWithLLM(sections, scores);
+
     res.status(200).json({
         file: {
             fileName: req.file.originalname,
             size: req.file.size
         },
         sections,
-        scores
+        scores,
+        suggestions
     });
   } catch (err) {
     next(err);

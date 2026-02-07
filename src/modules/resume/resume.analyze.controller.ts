@@ -30,6 +30,7 @@ export const analyzeResume = async (
             fileName: req.file.originalname,
             size: req.file.size
         },
+        resumeText: text,
         sections,
         scores,
         suggestions

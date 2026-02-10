@@ -14,10 +14,14 @@
   "type": "commonjs",
   "dependencies": {
     "@google/genai": "^1.40.0",
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@types/cors": "^2.8.19",
+    "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "multer": "^2.0.2",
-    "pdf-parse": "^2.4.5"
+    "pdf-parse": "^2.4.5",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
